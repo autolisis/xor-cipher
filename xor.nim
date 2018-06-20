@@ -1,15 +1,19 @@
-var buf: cstring
+var curKey:int
+var key:string = "CCC"
+var outChar: char
 
-var key: cstring  = "abc"
+proc main =
+    # var infile = openAsync("/dev/stdin", fmRead)
+    # let infile = open("/dev/stdin", fmRead)
+    var charRead = stdin.readChar()
+    while charRead > char(0):
+        outChar = char(int(key[curKey]) xor int(charRead))
+        write(stdout, outChar)
+        curKey += 1
+        curKey = curKey mod len(key)
+        try:
+            charRead = stdin.readChar()
+        except:
+            return
 
-proc encrypt =
-  var l = readBuffer(stdin, buf, 4096)
-  while l > 0:
-    for i in 0..<l:
-      buf[i] = char(int(buf[i]) xor int(key[i mod len(key)]))
-    l = readBuffer(stdin, buf, 4096)
-
-proc decrypt =
-  encrypt()
-
-encrypt()
+main()

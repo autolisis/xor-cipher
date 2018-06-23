@@ -1,19 +1,23 @@
-var curKey:int
-var key:string = "CCC"
-var outChar: char
+import os
 
-proc main =
-    # var infile = openAsync("/dev/stdin", fmRead)
-    # let infile = open("/dev/stdin", fmRead)
-    var charRead = stdin.readChar()
-    while charRead > char(0):
-        outChar = char(int(key[curKey]) xor int(charRead))
-        write(stdout, outChar)
-        curKey += 1
-        curKey = curKey mod len(key)
-        try:
-            charRead = stdin.readChar()
-        except:
-            return
+# let defKey*: string = "HELLO"
+var buf: array[4096, char]
 
-main()
+let argv = commandLineParams()
+
+if len(argv) <= 0:
+  echo "Please enter key"
+  quit(QuitFailure)
+
+let key = argv[0]
+
+var keyPos: int = 0
+
+var bytesRead = readChars(stdin, buf, 0, len(buf))
+while bytesRead > 0:
+  var i:int = 0
+  while i < bytesRead:
+    buf[i] = char(int(buf[i]) xor int(key[i mod len(key)]))
+    inc(i)
+  discard writeChars(stdout, buf, 0, bytesRead)
+  bytesRead = readChars(stdin, buf, 0, len(buf))
